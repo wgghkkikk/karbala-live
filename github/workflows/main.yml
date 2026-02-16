@@ -8,14 +8,13 @@ jobs:
   stream:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Start Live Stream
         run: |
-          # سحب البث المباشر الخام (بعيداً عن اليوتيوب) وتوجيهه لقناتك
+          # هنا سحبنا البث من سيرفر القناة مباشرة (M3U8)
+          # هذا الرابط ماله علاقة بيوتيوب ولا يطلب تأكيد بوت
           ffmpeg -re -i "https://shrine.karbala.tv/live/st1/playlist.m3u8" \
           -c:v libx264 -preset ultrafast -b:v 450k -maxrate 450k -bufsize 900k \
           -c:a aac -b:a 128k -ar 44100 \
