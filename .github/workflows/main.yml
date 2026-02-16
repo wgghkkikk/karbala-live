@@ -1,27 +1,19 @@
-name: Karbala Live Stream
+name: Black Screen Test
 on:
-  workflow_dispatch: # يسمح لك بتشغيل البث يدوياً
-  schedule:
-    - cron: '0 */6 * * *' # يعيد تشغيل البث تلقائياً كل 6 ساعات لضمان الاستمرارية
+  workflow_dispatch:
 
 jobs:
   stream:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Tools
-        run: |
-          sudo curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp
-          sudo chmod a+rx /usr/local/bin/yt-dlp
-          sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Run Streaming Script
+      - name: Stream Black Screen
         run: |
-          # الرابط اللي ردته لبث كربلاء
-          URL=$(yt-dlp -f "best[height<=360]" -g "https://www.youtube.com/watch?v=Ds76FCJzLL0")
-          
-          # إرسال البث لمفتاحك الخاص q12g-s6wc-0y03-0ua5-6e6p
-          ffmpeg -re -i "$URL" \
-          -c:v libx264 -preset ultrafast -b:v 400k \
-          -c:a aac -b:a 128k -ar 44100 \
+          # توليد شاشة سودة مع صوت صامت وبثها فوراً
+          ffmpeg -f lavfi -i color=c=black:s=640x360:r=25 -f lavfi -i anullsrc=cl=mono:r=44100 \
+          -c:v libx264 -preset ultrafast -tune zerolatency -b:v 300k \
+          -c:a aac -b:a 128k \
           -f flv "rtmp://a.rtmp.youtube.com/live2/q12g-s6wc-0y03-0ua5-6e6p"
           
