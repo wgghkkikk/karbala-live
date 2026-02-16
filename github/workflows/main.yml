@@ -1,10 +1,22 @@
-      - name: Run Streaming Script
+name: Karbala Direct Stream
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *' # إعادة تشغيل تلقائية كل 6 ساعات لضمان الاستمرارية
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install FFmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Start Live Stream
         run: |
-          # إضافة User-Agent للتمويه بأنك متصفح حقيقي
-          URL=$(yt-dlp --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" -f "best[height<=360]" -g "https://www.youtube.com/watch?v=Ds76FCJzLL0")
-          
-          ffmpeg -re -i "$URL" \
-          -c:v libx264 -preset ultrafast -b:v 400k \
+          # استخدام رابط مباشر M3U8 لتجاوز حظر يوتيوب للبوتات
+          # هذا الرابط يسحب البث الخام "كبل"
+          ffmpeg -re -i "https://shrine.karbala.tv/live/st1/playlist.m3u8" \
+          -c:v libx264 -preset ultrafast -b:v 400k -maxrate 400k -bufsize 800k \
           -c:a aac -b:a 128k -ar 44100 \
           -f flv "rtmp://a.rtmp.youtube.com/live2/q12g-s6wc-0y03-0ua5-6e6p"
           
